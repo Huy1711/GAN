@@ -10,15 +10,9 @@ Full report at: [Notion site](https://github.com/Huy1711/GAN)
 - [x] Implementation of GAN with Pytorch and Pytorch Lightning.
 - [x] Improved GAN with One-sided label smoothing, batchnorm1d.
 - [x] Implementation of DCGAN with Pytorch and Pytorch Lightning.
-- [x] Implementation of CGAN with Pytorch.
+- [x] Implementation of CGAN with Pytorch Lightning.
 - [x] Interpolation between 2 samples
 - [ ] Parzen window implementation
-
-## Overview
-
-- [GAN](github.com/Huy1711/GAN/blob/main/README.md?plain=1#L28)
-- [DCGAN](github.com/Huy1711/GAN/blob/main/README.md?plain=1#L59)
-- [CGAN](github.com/Huy1711/GAN/blob/main/README.md?plain=1#L83)
 
 ## Dataset
 
@@ -28,11 +22,17 @@ Full report at: [Notion site](https://github.com/Huy1711/GAN)
 
 Implementation of [GAN Original Paper](https://arxiv.org/abs/1406.2661)
 
-### Architecture
+### Models
 
 ![GAN architecture drawio (3)](https://user-images.githubusercontent.com/41891935/143758681-275e152c-623e-4b82-a939-0d41f057de19.png)
 
+Dropout and BatchNorm1D are used in this implementation
+
 ### Training
+
+Loss function: Binary Cross Entropy
+
+Optimizers: 2 Adam optimizers for Discriminator and Generator
 
 Training loss of Discriminator and Generator
 
@@ -60,11 +60,13 @@ Interpolation
 
 Implementation of [DCGAN Paper](https://arxiv.org/abs/1511.06434)
 
-### Architecture
+### Models
 
 ![Discriminator drawio (1)](https://user-images.githubusercontent.com/41891935/143759200-6f4258ca-077c-4d5d-beb0-b5efbe5fdb7f.png)
 
 ### Training
+
+DCGAN's training is similar to GAN
 
 Training loss of Discriminator and Generator
 
@@ -84,9 +86,13 @@ Interpolation
 
 Implementation of [CGAN Paper](https://arxiv.org/abs/1411.1784)
 
-### Architecture
+### Models
 
-![cgan](https://user-images.githubusercontent.com/41891935/143759585-adf01f51-14e5-4426-aaf0-495662dcb72b.png)
+![CGAN models](https://user-images.githubusercontent.com/41891935/143769442-5ff5ffc1-661b-42d1-afbc-f0e855a11c04.png)
+
+**Idea**
+
+GAN can be extended to a conditional model if both the generator and discriminator are conditioned on some extra information **y**. **y** could be any kind of auxiliary information, such as class labels or data from other modalities (Here i am using **y** as class labels). We can perform the conditioning by feeding y into the both the discriminator and generator as additional input layer.
 
 ### Training
 
