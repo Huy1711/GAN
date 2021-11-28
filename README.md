@@ -1,80 +1,112 @@
 # GAN---Generative-Adversarial-Network-
-Implementation of GAN - Generative Adversarial Network 
+Implementation of GAN - Generative Adversarial Network
+
+Framework: Pytorch and Pytorch Lightning
+
+Full report at: [Notion site](https://github.com/Huy1711/GAN)
+
+**Task list**
+
+- [x] Implementation of GAN with Pytorch and Pytorch Lightning.
+- [x] Improved GAN with One-sided label smoothing, batchnorm1d.
+- [x] Implementation of DCGAN with Pytorch and Pytorch Lightning.
+- [x] Implementation of CGAN with Pytorch.
+- [x] Interpolation between 2 samples
+- [ ] Parzen window implementation
+
+## Overview
+
+- [GAN](github.com/Huy1711/GAN/blob/main/README.md?plain=1#L28)
+- [DCGAN](github.com/Huy1711/GAN/blob/main/README.md?plain=1#L59)
+- [CGAN](github.com/Huy1711/GAN/blob/main/README.md?plain=1#L83)
 
 ## Dataset
 
-**MNIST**: Bộ dữ liệu gồm các hình ảnh chữ số viết tay (từ 0 đến 9), tập train gồm 60,000 mẫu, tập test gồm 10,000 mẫu. Mỗi ảnh đều có kích cỡ 28x28 pixel, mỗi pixel chứa 1 giá trị thể hiện độ sáng tối của pixel đó (grayscale). Giá trị càng cao thì càng tối, là một số thực nằm trong khoảng 0 đến 255.
+[MNIST](http://yann.lecun.com/exdb/mnist/) and [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist)
 
-**FashionMNIST**: Bộ dữ liệu gồm các hình ảnh về các phụ kiện, quần áo; tập train gồm 60,000 mẫu, tập test gồm 10,000 mẫu. Mỗi ảnh đều có kích cỡ 28x28 pixel và giá trị grayscale giống với MNIST.
+## GAN (Generative Adversarial Network)
 
-Mỗi mẫu đều được gán với 1 trong các nhãn: 0 T-shirt/top, 1 Trouser, 2 Pullover, 3 Dress, 4 Coat, 5 Sandal, 6 Shirt, 7 Sneaker, 8 Bag, 9 Ankle boot.
+Implementation of [GAN Original Paper](https://arxiv.org/abs/1406.2661)
 
-## Define the Model
+### Architecture
 
-![image](https://user-images.githubusercontent.com/41891935/141313326-aababc39-3632-4137-b22d-12fea6d48858.png)
+![GAN architecture drawio (3)](https://user-images.githubusercontent.com/41891935/143758681-275e152c-623e-4b82-a939-0d41f057de19.png)
 
-### Discriminator
+### Training
 
-Sử dụng mạng MLP, mỗi lớp có hàm kích hoạt là Leaky ReLU
+Training loss of Discriminator and Generator
 
-**Leaky ReLu**
+![GAN training loss](https://user-images.githubusercontent.com/41891935/143762866-7b935364-9255-457d-9fc6-3ce0e59710a7.png)
 
-![image](https://user-images.githubusercontent.com/41891935/141313366-87e60cc9-772c-4d29-96ca-02b0d09e4a33.png)
+Sample from training
 
-**Sigmoid Output**
+![GAN training samples](https://user-images.githubusercontent.com/41891935/143762886-0fb037f8-1099-4b27-b441-aa4e1731cc08.png)
 
-Discriminator sẽ có giá trị output nằm trong khoảng 0-1 quyết định nhãn *real* hoặc *fake*.
+### Sample result
 
-Ta sử dụng hàm loss [BCEWithLogitsLoss](https://pytorch.org/docs/stable/nn.html#bcewithlogitsloss), hàm này bao gồm hàm sigmoid để làm hàm kích hoạt và hàm loss BCE.
+**MNIST**
 
-**Dropout**
+![GAN MNIST](https://user-images.githubusercontent.com/41891935/143762945-4a5b76d0-e386-4d59-a756-c69175cdc52b.PNG)
 
-Ta sử dụng Dropout để huấn luyện cả Discriminator và Generator
+Interpolation
 
-### Generator
+![GAN interpolation](https://user-images.githubusercontent.com/41891935/143762960-82d4e5f3-ccbe-407f-882d-fe19a50ec674.PNG)
 
-Cũng sử dụng mạng MLP có cấu trúc giống Discriminator nhưng áp dụng thêm hàm *tanh* vào lớp output
+**Fashion-MNIST**
 
-**tanh Output**
+![GAN Fashion-MNIST](https://user-images.githubusercontent.com/41891935/143762967-736bfd3f-f112-4a83-88b3-da335f1c5aa0.PNG)
 
-Hàm *tanh* sẽ làm cho output nằm trong khoảng -1 đến 1, thay vì 0 đến 1.
+## DCGAN (Deep Convolution GAN)
 
-![image](https://user-images.githubusercontent.com/41891935/141313400-03f4ce4e-81b4-4792-8695-687eaf6895a6.png)
+Implementation of [DCGAN Paper](https://arxiv.org/abs/1511.06434)
 
-## **Discriminator and Generator Losses**
+### Architecture
 
-### **Discriminator Losses**
+![Discriminator drawio (1)](https://user-images.githubusercontent.com/41891935/143759200-6f4258ca-077c-4d5d-beb0-b5efbe5fdb7f.png)
 
-Đối với discriminator, tổng loss sẽ là `d_loss = d_real_loss + d_fake_loss`
+### Training
 
-trong đó d_real_loss là loss đối với dữ liệu từ tập dữ liệu huấn luyện, còn d_fake_loss là loss đối với dữ liệu từ Generator.
+Training loss of Discriminator and Generator
 
-Ta sử dụng hàm loss binary cross entropy loss with logits (hàm [BCEWithLogitsLoss](https://pytorch.org/docs/stable/nn.html#bcewithlogitsloss)). Hàm này bao gồm hàm sigmoid để làm hàm kích hoạt và hàm loss BCE. Và output của discriminator là 1 cho ảnh real và 0 cho ảnh fake. Ta muốn tối đa $D(x)$ và $1-D(G(z))$
+![image](https://user-images.githubusercontent.com/41891935/143763045-6b223b0e-9cfe-4c12-97ae-644325b1b44f.png)
 
-### **Generator Losses**
+### Sample Result
 
-Latent vector đầu vào sẽ là một vector sinh ngẫu nhiên theo phân phối chuẩn với kỳ vọng bằng 0 và phương sai bằng 1.
+**MNIST**
 
-Loss của generator được tính bằng real_loss của discriminator đối với ảnh fake. Tức là ta muốn tối đa $D(G(z))$
+![DCGAN MNIST](https://user-images.githubusercontent.com/41891935/143763060-7d0bb4b2-5fd4-461e-80f0-79ee407778b9.png)
 
-## **Optimizers**
+Interpolation
 
-Sử dụng 2 **Adam optimizers** riêng cho discriminator và generator để cập nhật bộ trọng số của chúng.
+![DCGAN interpolation](https://user-images.githubusercontent.com/41891935/143763068-819d96b4-c861-499c-80d5-f8fbb22e5ef3.PNG)
 
-## **Training**
+## CGAN (Conditional GAN)
 
-Ta huấn luyện lần lượt discriminator và generator.
+Implementation of [CGAN Paper](https://arxiv.org/abs/1411.1784)
 
-**Discriminator training**
+### Architecture
 
-1. Tính real_loss trên tập dữ liệu ảnh thật (training dataset)
-2. Generator sinh ảnh
-3. Tính fake_loss trên tập dữ liệu sinh bởi Generator
-4. Lấy tổng real_loss và fake_loss
-5. Thực hiện Backpropagation và 1 bước tối ưu để cập nhật trọng số của Discriminator
+![cgan](https://user-images.githubusercontent.com/41891935/143759585-adf01f51-14e5-4426-aaf0-495662dcb72b.png)
 
-**Generator training**
+### Training
 
-1. Generator sinh ảnh
-2. Tính real_loss của Discriminator trên tập dữ liệu ảnh sinh
-3. Thực hiện Backpropagation và 1 bước tối ưu để cập nhật trọng số của Generator
+Training loss of Discriminator and Generator
+
+![image](https://user-images.githubusercontent.com/41891935/143763100-b4273ea8-cfc3-4eab-a45a-4fdafc3e989e.png)
+
+### Sample Result
+
+**MNIST**
+
+Samples with label '1'
+
+![CGAN MNIST_1](https://user-images.githubusercontent.com/41891935/143763111-bbc4d55b-b7f4-47c7-9ca8-76aa61a5be5b.png)
+
+Samples with label '5'
+
+![CGAN MNIST_5](https://user-images.githubusercontent.com/41891935/143763118-7014b030-bdf7-45ec-bd74-2f650ac5a526.png)
+
+Interpolation
+
+![CGAN interpolation](https://user-images.githubusercontent.com/41891935/143763121-db75a602-b9e1-42d7-a92b-992145a580eb.PNG)
+
