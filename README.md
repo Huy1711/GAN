@@ -3,7 +3,7 @@ Implementation of GAN - Generative Adversarial Network
 
 Framework: Pytorch and Pytorch Lightning
 
-Full report at: [Notion site](https://github.com/Huy1711/GAN)
+Full report at: [Notion site](https://chartreuse-aquarius-add.notion.site/GAN-Generative-Adversarial-Network-e0712560f1e74a43b00dec129d695653)
 
 **Task list**
 
